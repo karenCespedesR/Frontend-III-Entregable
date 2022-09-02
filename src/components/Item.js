@@ -10,25 +10,32 @@
 //    button       (este boton debe permitir comprar, pero si la cantidad es menor a 0 debe estar deshabilitado y decir "Sin stock")
 import React,{ useState, useEffect } from "react";
 
-
 export default function Item({id,nombre,descripcion,stock, sumarCarrito}) {
 
   const [cantidadStock,setCantidadStock]= useState(stock);
   const [texto,setTexto]= useState('Comprar');
   const [botonOff,setBotonOff]=useState(false);
-  const [colorStock, setcolorStock] = useState();
+  const [color, setColor] = useState('black');
+  const [backgroundColor, setBackgroundColor] = useState('white');
 
-  const handleClick = ()=>{
-    if(cantidadStock>=1){
+  const styles ={color,backgroundColor};
+
+  const click = ()=>{
+    if(cantidadStock>1){
       sumarCarrito();
       setCantidadStock(cantidadStock-1);
-    }else{
+      
+    }else if(cantidadStock===1){
+      sumarCarrito();
       setTexto('Sin Stock');
-      setCantidadStock('Agotado');
-  setBotonOff(true);
+      setCantidadStock('agotado');
+      setBotonOff(true);
+      setColor('rgb(155, 0, 0)');
+      setBackgroundColor('rgb(255, 178, 178)')
+    }else{
+      return
     }
-  }
-    
+  };
   
   useEffect(() => {
     
@@ -37,17 +44,19 @@ export default function Item({id,nombre,descripcion,stock, sumarCarrito}) {
 
   useEffect(() => {
     setCantidadStock(stock)
-  }, [stock]);
+    setBotonOff(true);
+  }, [stock,botonOff]);
   
+  
+
   return (
     <div className='producto' key={id}>
       <h3>{nombre}</h3>
       <p>{descripcion}</p>
       <h5>En stock:
-        <span >{cantidadStock}</span>
+        <span style={styles}>{cantidadStock}</span>
       </h5>
-      <button onClick={() => handleClick()} disabled={botonOff} key={id}
-      >{texto}</button>
+      <button onClick={() => click()} disabled={cantidadStock==='agotado'&&botonOff!==false} key={id}>{texto}</button>
     </div>
   )
 }
